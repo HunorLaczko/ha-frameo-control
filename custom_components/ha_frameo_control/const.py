@@ -1,4 +1,7 @@
 """Constants for the HA Frameo Control integration."""
+import logging
+
+LOGGER = logging.getLogger(__package__)
 DOMAIN = "ha_frameo_control"
 
 # Configuration Keys
