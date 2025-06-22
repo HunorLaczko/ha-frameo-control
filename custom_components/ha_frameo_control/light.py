@@ -1,4 +1,3 @@
-import logging
 from homeassistant.components.light import LightEntity, ColorMode, ATTR_BRIGHTNESS
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -56,7 +55,7 @@ class FrameoScreen(LightEntity):
         self.async_write_ha_state()
 
     async def async_update(self) -> None:
-        LOGGER.debug("Updating Frameo screen state")
+        LOGGER.error("Updating Frameo screen state")
         power_state = await self.client.async_shell("dumpsys power")
         if not power_state:
             self._attr_available = False
@@ -71,4 +70,4 @@ class FrameoScreen(LightEntity):
                     self._attr_brightness = int(line.split("=")[1])
                     break
                 except (ValueError, IndexError):
-                    LOGGER.warning("Could not parse brightness from line: %s", line)
+                    LOGGER.error("Could not parse brightness from line: %s", line)

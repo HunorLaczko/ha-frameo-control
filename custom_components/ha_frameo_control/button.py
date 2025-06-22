@@ -1,4 +1,3 @@
-import logging
 from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -34,7 +33,6 @@ class FrameoActionButton(ButtonEntity):
         self._attr_unique_id = f"{entry.entry_id}_{endpoint}"
         self._attr_icon = icon
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
-
     async def async_press(self) -> None:
         LOGGER.error("Executing button '%s'", self.name)
         await self.client.async_shell(self._command)
@@ -43,12 +41,10 @@ class FrameoStartWirelessAdbButton(ButtonEntity):
     _attr_has_entity_name = True
     _attr_device_class = ButtonDeviceClass.RESTART
     _attr_name = "Start Wireless ADB"
-
     def __init__(self, client, entry: FrameoConfigEntry) -> None:
         self.client = client
         self._attr_unique_id = f"{entry.entry_id}_start_wireless"
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
-
     async def async_press(self) -> None:
         LOGGER.error("Executing 'Start Wireless ADB' button.")
         await self.client.async_tcpip(5555)

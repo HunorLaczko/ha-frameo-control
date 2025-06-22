@@ -1,6 +1,6 @@
 {
   "config": {
-    "title": "Frameo Control",
+    "title": "HA Frameo Control",
     "step": {
       "user": {
         "title": "Select Connection Method",
@@ -19,15 +19,20 @@
         }
       },
       "USB": {
-        "title": "Configure USB Connection",
-        "description": "Connect your Frameo via USB. If you have multiple ADB devices connected, specify the serial number (optional).",
+        "title": "Searching for USB Devices...",
+        "description": "Scanning for connected ADB devices. Please wait."
+      },
+      "usb_select": {
+        "title": "Select a USB Device",
+        "description": "Choose the Frameo device you want to add from the list of detected devices.",
         "data": {
-          "serial": "Device Serial Number (Optional)"
+          "serial": "Device"
         }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to the device. Please check your settings, ensure ADB is enabled, and that the device is accessible.",
+      "no_devices_found": "No ADB devices found connected via USB. Please ensure the device is plugged in and ADB is enabled in its settings.",
       "unknown": "An unknown error occurred. Check the Home Assistant logs for more details."
     },
     "abort": {

@@ -31,12 +31,15 @@ class AdbClient:
         """Execute a shell command, handling both connection types."""
         try:
             if self.is_usb:
+                # Run synchronous blocking call in an executor job
                 return await self.hass.async_add_executor_job(
                     self.device.shell, command
                 )
+            
+            # Await the coroutine for the async TCP device
             return await self.device.shell(command)
         except (AdbConnectionError, AdbTimeoutError) as e:
-            LOGGER.warning("ADB command '%s' failed: %s", command, e)
+            LOGGER.error("ADB command '%s' failed: %s", command, e)
         except Exception as e:
             LOGGER.error("An unexpected error occurred while running '%s': %s", command, e)
         return None
@@ -50,6 +53,6 @@ class AdbClient:
         try:
             await self.hass.async_add_executor_job(self.device.tcpip, port)
         except (AdbConnectionError, AdbTimeoutError) as e:
-            LOGGER.warning("Failed to start wireless ADB: %s", e)
+            LOGGER.error("Failed to start wireless ADB: %s", e)
         except Exception as e:
             LOGGER.error("An unexpected error occurred while starting wireless ADB: %s", e)
