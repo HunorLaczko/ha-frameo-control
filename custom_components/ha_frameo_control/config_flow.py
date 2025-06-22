@@ -1,7 +1,7 @@
 import voluptuous as vol
 from adb_shell.adb_device import AdbDeviceUsb
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
-from adb_shell.exceptions import AdbShellError, UsbDeviceNotFoundError
+from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError, UsbDeviceNotFoundError, TcpTimeoutException
 
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
@@ -44,7 +44,7 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     title=f"Frameo ({user_input[CONF_HOST]})",
                     data={CONF_CONN_TYPE: CONN_TYPE_NETWORK, **user_input},
                 )
-            except AdbShellError:
+            except (AdbConnectionError, AdbTimeoutError, TcpTimeoutException):
                 errors["base"] = "cannot_connect"
             except Exception:
                 errors["base"] = "unknown"
@@ -68,7 +68,7 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     title="Frameo (USB)",
                     data={CONF_CONN_TYPE: CONN_TYPE_USB, **user_input},
                 )
-            except (UsbDeviceNotFoundError, AdbShellError):
+            except (UsbDeviceNotFoundError, AdbConnectionError, AdbTimeoutError):
                 errors["base"] = "cannot_connect"
             except Exception:
                 errors["base"] = "unknown"

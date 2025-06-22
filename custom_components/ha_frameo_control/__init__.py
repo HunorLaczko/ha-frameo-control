@@ -1,7 +1,7 @@
 import logging
 from adb_shell.adb_device import AdbDeviceUsb
 from adb_shell.adb_device_async import AdbDeviceTcpAsync
-from adb_shell.exceptions import AdbShellError
+from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError, UsbDeviceNotFoundError
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
@@ -31,13 +31,13 @@ class AdbClient:
                 return await self.hass.async_add_executor_job(
                     self.device.shell, command
                 )
-            else:
-                # Await the coroutine for the async TCP device
-                return await self.device.shell(command)
-        except AdbShellError as e:
+            
+            # Await the coroutine for the async TCP device
+            return await self.device.shell(command)
+        except (AdbConnectionError, AdbTimeoutError) as e:
             _LOGGER.warning("ADB command '%s' failed: %s", command, e)
         except Exception as e:
-            _LOGGER.error("An unexpected error occurred: %s", e)
+            _LOGGER.error("An unexpected error occurred while running '%s': %s", command, e)
         return None
 
     async def async_tcpip(self, port: int) -> None:
@@ -48,8 +48,10 @@ class AdbClient:
 
         try:
             await self.hass.async_add_executor_job(self.device.tcpip, port)
-        except AdbShellError as e:
+        except (AdbConnectionError, AdbTimeoutError) as e:
             _LOGGER.warning("Failed to start wireless ADB: %s", e)
+        except Exception as e:
+            _LOGGER.error("An unexpected error occurred while starting wireless ADB: %s", e)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -65,5 +67,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
-
     return unload_ok
