@@ -2,11 +2,11 @@
   "domain": "ha_frameo_control",
   "name": "Frameo Control",
   "config_flow": true,
-  "documentation": "https://gitea.lnrweb.com/luni/ha-frameo-control",
-  "issue_tracker": "https://gitea.lnrweb.com/luni/ha-frameo-control/issues",
-  "codeowners": ["@luni"],
+  "documentation": "https://github.com/HunorLaczko/ha-frameo-control",
+  "issue_tracker": "https://github.com/HunorLaczko/ha-frameo-control/issues",
+  "codeowners": ["@HunorLaczko"],
   "requirements": [
-    "adb-shell[usb,tcp]>=0.4.0"
+    "adb-shell[usb,tcp]>=0.4.4"
   ],
   "version": "0.1",
   "iot_class": "local_polling"
