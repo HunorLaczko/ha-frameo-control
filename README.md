@@ -1,30 +1,21 @@
-# HA Frameo Control 🏠
+# HA Frameo Control Integration 🏠
+
 
 This is a custom integration for [Home Assistant](https://www.home-assistant.io/) to control [Frameo](https://frameo.net/) digital photo frames.
 
-This integration was developed based on a **10.1" Frameo device running Android 6.0.1** and has been used with both the standard Frameo application and the alternative [ImmichFrame](https://github.com/ImmichFrame/immich-frame) client. It communicates with the device directly using the Android Debug Bridge (ADB) protocol.
+This integration provides Home Assistant entities (`light`, `button`) for controlling your device. It was developed based on a **10.1" Frameo device running Android 6.0.1** and has been used with both the standard Frameo application and the alternative [ImmichFrame](https://github.com/ImmichFrame/immich-frame) client.
 
 ## 🌟 Key Features
 
-* **Direct Local Control:** 📡 No cloud services required. Commands are sent directly to the device over your local network or USB.
+* **Local Control:** 📡 All commands are sent locally to the backend add-on.
 * **Screen & Brightness Control:** 💡 A `light` entity allows you to turn the screen on/off and adjust the brightness.
 * **Slideshow Control:** ▶️ `button` entities to navigate to the **Next** and **Previous** photos, and to **Pause** the slideshow.
 * **App & Settings Launchers:** 📱 Buttons to directly open the Frameo app, ImmichFrame, or the Android Settings page.
-* **Flexible Connection:** 🔌 Connect via direct USB or over the network using Wireless ADB.
-* **Wireless ADB Helper:** 🪄 A special button is provided to easily enable Wireless ADB mode when connected via USB.
+* **Wireless ADB Helper:** 🪄 A special button is provided by the backend to easily enable Wireless ADB mode.
 
-## 🔌 Important Prerequisite: Enabling ADB
+## ‼️ Requirements
 
-Frameo devices running this version of Android **do not have Wireless ADB enabled by default**, and this setting does not survive a reboot on non-rooted devices. You must first connect via USB to enable it.
-
-### Step 1: Enable ADB on the Frameo Frame
-1.  On your Frameo device, navigate to **Settings**.
-2.  Tap on **About**.
-3.  Tap on the **Beta Program** option to enable it. This will reveal the developer settings.
-4.  An **ADB Access** option should now be visible. Tap it to enable ADB.
-
-### Step 2: Understand the Connection Workflow
-To control the device wirelessly, you must first connect it to the computer running Home Assistant via USB and use the provided "Start Wireless ADB" button. This will enable ADB over TCP/IP until the next time the frame reboots.
+You **MUST** install and run the **[Frameo Control Backend Add-on](https://github.com/HunorLaczko/ha-frameo-control-addon)** before setting up this integration. The add-on handles the actual communication with the device.
 
 ## 🚀 Installation
 
@@ -49,27 +40,11 @@ To control the device wirelessly, you must first connect it to the computer runn
 
 ## 🛠️ Configuration
 
-Once installed, you can add the integration to Home Assistant.
+Once the Backend Add-on is running, you can add this integration.
 
 1.  Navigate to **Settings** > **Devices & Services**.
 2.  Click **Add Integration** and search for **"HA Frameo Control"**.
-3.  You will be asked to choose a connection method.
-
-### Connection via USB 🔌
-This is the recommended first step.
-1.  Connect your Frameo device directly to your Home Assistant machine using a USB cable.
-2.  Choose **USB** from the configuration menu.
-3.  (Optional) If you have multiple USB devices connected, you may need to provide the device's serial number. Leave it blank if it's the only one.
-4.  Click **Submit**. An integration will be created with all available entities.
-
-**To enable wireless control**, find the **"Start Wireless ADB"** button on your new device's control page in Home Assistant and press it. This will prepare the device for a network connection.
-
-### Connection via Network 📶 (Wireless ADB)
-This method only works if you have already enabled Wireless ADB on the device (see the USB step above).
-1.  Find your Frameo's IP address from its Wi-Fi settings.
-2.  Choose **Network** from the configuration menu.
-3.  Enter the IP address of your Frameo frame. The port should be `5555`.
-4.  Click **Submit**.
+3.  A confirmation dialog will appear. Click **Submit**. The integration will automatically connect to the backend add-on.
 
 ## 🖼️ Entities
 
@@ -77,14 +52,15 @@ This integration will create the following entities for your Frameo device:
 
 | Entity Type | Name                | Description                                                          |
 | :---------- | :------------------ | :------------------------------------------------------------------- |
-| `light`     | Frameo Screen       | Controls the screen on/off state and brightness.                     |
+| `light`     | Screen              | Controls the screen on/off state and brightness.                     |
 | `button`    | Next Photo          | Swipes to the next photo in the slideshow.                           |
 | `button`    | Previous Photo      | Swipes to the previous photo in the slideshow.                       |
 | `button`    | Pause Photo         | Toggles play/pause for the slideshow.                                |
 | `button`    | Start ImmichFrame   | Launches the ImmichFrame application.                                |
 | `button`    | Start Frameo App    | Launches the default Frameo application.                             |
 | `button`    | Open Settings       | Opens the main Android Settings page.                                |
-| `button`    | Start Wireless ADB  | (USB Connection Only) Enables Wireless ADB mode on the device.       |
+| `button`    | Start Wireless ADB  | Asks the backend add-on to enable Wireless ADB on the device.          |
+
 
 ## ❓ Troubleshooting
 

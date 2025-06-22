@@ -1,58 +1,47 @@
-"""The ADB client wrapper."""
-from adb_shell.adb_device import AdbDeviceUsb
-from adb_shell.adb_device_async import AdbDeviceTcpAsync
-from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError
+"""API client for the Frameo Control Backend Add-on."""
+import httpx
+from homeassistant.helpers.httpx_client import get_async_client
 
-from homeassistant.core import HomeAssistant
-from homeassistant.const import CONF_HOST, CONF_PORT
+from .const import LOGGER
 
-from .const import (
-    CONF_CONN_TYPE,
-    CONN_TYPE_NETWORK,
-    CONN_TYPE_USB,
-    CONF_SERIAL,
-    LOGGER,
-)
+class FrameoAddonApiClient:
+    """API Client for the Frameo Add-on."""
 
-class AdbClient:
-    """A unified ADB client for both async TCP and sync USB connections."""
+    def __init__(self, hass):
+        """Initialize the API client."""
+        # The add-on is on the host network, accessed via its slug as the hostname
+        self.client = get_async_client(hass, verify_ssl=False)
+        self.base_url = "http://a0d7b954-frameo_control_addon:5000"
 
-    def __init__(self, hass: HomeAssistant, config: dict) -> None:
-        """Initialize the ADB client."""
-        self.hass = hass
-        self.is_usb = config.get(CONF_CONN_TYPE) == CONN_TYPE_USB
-        
-        if self.is_usb:
-            self.device = AdbDeviceUsb(serial=config.get(CONF_SERIAL), default_transport_timeout_s=5.)
-        else:
-            self.device = AdbDeviceTcpAsync(host=config[CONF_HOST], port=config[CONF_PORT], default_transport_timeout_s=5.)
-
-    async def async_shell(self, command: str) -> str | None:
-        """Execute a shell command, handling both connection types."""
+    async def async_post_shell(self, command: str):
+        """Send a shell command to the add-on."""
+        url = f"{self.base_url}/shell"
         try:
-            if self.is_usb:
-                # Run synchronous blocking call in an executor job
-                return await self.hass.async_add_executor_job(
-                    self.device.shell, command
-                )
-            
-            # Await the coroutine for the async TCP device
-            return await self.device.shell(command)
-        except (AdbConnectionError, AdbTimeoutError) as e:
-            LOGGER.error("ADB command '%s' failed: %s", command, e)
-        except Exception as e:
-            LOGGER.error("An unexpected error occurred while running '%s': %s", command, e)
-        return None
+            response = await self.client.post(url, json={"command": command}, timeout=15)
+            response.raise_for_status()
+            return await response.json()
+        except httpx.RequestError as e:
+            LOGGER.error("Error sending shell command '%s': %s", command, e)
+            return None
 
-    async def async_tcpip(self, port: int) -> None:
-        """Enable tcpip on the device (only for USB)."""
-        if not self.is_usb:
-            LOGGER.error("Cannot enable tcpip on a network connection")
-            return
-
+    async def async_get_state(self):
+        """Get the current state from the add-on."""
+        url = f"{self.base_url}/state"
         try:
-            await self.hass.async_add_executor_job(self.device.tcpip, port)
-        except (AdbConnectionError, AdbTimeoutError) as e:
-            LOGGER.error("Failed to start wireless ADB: %s", e)
-        except Exception as e:
-            LOGGER.error("An unexpected error occurred while starting wireless ADB: %s", e)
+            response = await self.client.get(url, timeout=10)
+            response.raise_for_status()
+            return await response.json()
+        except httpx.RequestError as e:
+            LOGGER.error("Error getting state: %s", e)
+            return None
+
+    async def async_post_tcpip(self):
+        """Send a request to enable wireless adb."""
+        url = f"{self.base_url}/tcpip"
+        try:
+            response = await self.client.post(url, timeout=10)
+            response.raise_for_status()
+            return await response.json()
+        except httpx.RequestError as e:
+            LOGGER.error("Error enabling wireless ADB: %s", e)
+            return None
