@@ -1,7 +1,7 @@
 """The HA Frameo Control integration."""
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from .const import DOMAIN, PLATFORMS, LOGGER
+from .const import DOMAIN, LOGGER, PLATFORMS
 from .api import FrameoAddonApiClient
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

@@ -1,8 +1,12 @@
 """Constants for the HA Frameo Control integration."""
 import logging
+from homeassistant.const import Platform
 
 LOGGER = logging.getLogger(__package__)
 DOMAIN = "ha_frameo_control"
+
+# Define the platforms that this integration will create entities for
+PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON]
 
 # Configuration Keys
 CONF_CONN_TYPE = "connection_type"
