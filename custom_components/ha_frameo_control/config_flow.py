@@ -1,10 +1,24 @@
 import voluptuous as vol
-from adb_shell.adb_device_async import AdbDeviceTcpAsync, AdbDeviceUsbAsync
-from adb_shell.exceptions import AdbShellError
+from adb_shell.adb_device import AdbDeviceUsb
+from adb_shell.adb_device_async import AdbDeviceTcpAsync
+from adb_shell.exceptions import AdbShellError, UsbDeviceNotFoundError
 
 from homeassistant import config_entries
+from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_HOST, CONF_PORT
 from .const import DOMAIN, CONF_CONN_TYPE, CONN_TYPE_NETWORK, CONN_TYPE_USB, CONF_SERIAL
+
+async def _test_connection_usb(hass: HomeAssistant, serial: str | None) -> bool:
+    """Test the USB ADB connection in an executor job."""
+    def test_sync_usb():
+        """Synchronous USB test."""
+        device = AdbDeviceUsb(serial=serial)
+        device.connect(timeout_s=5.0)
+        device.close()
+        return True
+    
+    return await hass.async_add_executor_job(test_sync_usb)
+
 
 class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for HA Frameo Control."""
@@ -22,7 +36,6 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             try:
-                # Test connection
                 device = AdbDeviceTcpAsync(host=user_input[CONF_HOST], port=user_input[CONF_PORT])
                 await device.connect(timeout_s=5.0)
                 await device.close()
@@ -50,16 +63,12 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             try:
-                # Test connection
-                device = AdbDeviceUsbAsync(serial=user_input.get(CONF_SERIAL))
-                await device.connect(timeout_s=5.0)
-                await device.close()
-
+                await _test_connection_usb(self.hass, user_input.get(CONF_SERIAL))
                 return self.async_create_entry(
-                    title=f"Frameo (USB)",
+                    title="Frameo (USB)",
                     data={CONF_CONN_TYPE: CONN_TYPE_USB, **user_input},
                 )
-            except AdbShellError:
+            except (UsbDeviceNotFoundError, AdbShellError):
                 errors["base"] = "cannot_connect"
             except Exception:
                 errors["base"] = "unknown"
