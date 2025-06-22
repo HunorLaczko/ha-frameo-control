@@ -1,31 +1,24 @@
 """The HA Frameo Control integration."""
-from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
-
-from .const import DOMAIN, LOGGER
+from homeassistant.core import HomeAssistant
+from .const import DOMAIN, PLATFORMS, LOGGER
 from .api import FrameoAddonApiClient
 
-PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON]
-type FrameoConfigEntry = ConfigEntry[FrameoAddonApiClient]
-
-async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up HA Frameo Control from a config entry."""
-    LOGGER.error("Setting up Frameo integration for %s", entry.title)
-    
-    client = FrameoAddonApiClient(hass)
-    entry.runtime_data = client
+    api_client = FrameoAddonApiClient(hass)
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = api_client
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    
-    entry.async_on_unload(entry.add_update_listener(async_update_listener))
     return True
 
 async def async_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle options update."""
     await hass.config_entries.async_reload(entry.entry_id)
 
-async def async_unload_entry(hass: HomeAssistant, entry: FrameoConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    LOGGER.error("Unloading Frameo integration for %s", entry.title)
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        hass.data[DOMAIN].pop(entry.entry_id)
+    return unload_ok

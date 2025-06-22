@@ -3,10 +3,8 @@ from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
 from .const import DOMAIN, LOGGER
 from .api import FrameoAddonApiClient
-from . import FrameoConfigEntry
 
 BUTTON_TYPES = {
     "next_photo": {"name": "Next Photo", "command": "input swipe 800 500 100 500", "icon": "mdi:skip-next"},
@@ -18,19 +16,18 @@ BUTTON_TYPES = {
     "start_wireless": {"name": "Start Wireless ADB", "command": "tcpip", "icon": "mdi:wifi-arrow-up-down", "device_class": ButtonDeviceClass.RESTART},
 }
 
-
-async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry, async_add_entities: AddEntitiesCallback):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the Frameo button platform."""
-    client: FrameoAddonApiClient = entry.runtime_data
+    client: FrameoAddonApiClient = hass.data[DOMAIN][entry.entry_id]
     entities = [FrameoButton(client, entry, key, props) for key, props in BUTTON_TYPES.items()]
     async_add_entities(entities)
-
 
 class FrameoButton(ButtonEntity):
     _attr_has_entity_name = True
 
-    def __init__(self, client: FrameoAddonApiClient, entry: FrameoConfigEntry, key: str, props: dict):
+    def __init__(self, client: FrameoAddonApiClient, entry: ConfigEntry, key: str, props: dict):
         self.client = client
+        self.config_data = entry.data
         self.key = key
         self.props = props
         self._attr_name = props["name"]
@@ -43,9 +40,8 @@ class FrameoButton(ButtonEntity):
         }
 
     async def async_press(self):
-        LOGGER.error("Executing button '%s'", self.name)
+        LOGGER.info("Executing button '%s'", self.name)
         if self.key == "start_wireless":
-            await self.client.async_post_tcpip()
+            await self.client.async_post_tcpip(self.config_data)
         else:
-            await self.client.async_post_shell(self.props["command"])
-
+            await self.client.async_post_shell(self.config_data, self.props["command"])
