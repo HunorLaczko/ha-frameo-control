@@ -3,10 +3,8 @@ from homeassistant.components.light import LightEntity, ColorMode, ATTR_BRIGHTNE
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from .const import DOMAIN
+from .const import DOMAIN, LOGGER
 from . import FrameoConfigEntry
-
-_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the Frameo light platform."""
@@ -28,10 +26,10 @@ class FrameoScreen(LightEntity):
         self._attr_brightness = None
 
     async def async_turn_on(self, **kwargs) -> None:
-        _LOGGER.info("Turning on Frameo screen")
+        LOGGER.info("Turning on Frameo screen")
         if ATTR_BRIGHTNESS in kwargs:
             new_brightness = kwargs[ATTR_BRIGHTNESS]
-            _LOGGER.info("Setting Frameo brightness to %s", new_brightness)
+            LOGGER.info("Setting Frameo brightness to %s", new_brightness)
             await self.client.async_shell(f"settings put system screen_brightness {new_brightness}")
             self._attr_brightness = new_brightness
         
@@ -46,7 +44,7 @@ class FrameoScreen(LightEntity):
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
-        _LOGGER.info("Turning off Frameo screen")
+        LOGGER.info("Turning off Frameo screen")
         if self._attr_is_on is True:
             await self.client.async_shell("input keyevent 26")
         else:
@@ -58,7 +56,7 @@ class FrameoScreen(LightEntity):
         self.async_write_ha_state()
 
     async def async_update(self) -> None:
-        _LOGGER.debug("Updating Frameo screen state")
+        LOGGER.debug("Updating Frameo screen state")
         power_state = await self.client.async_shell("dumpsys power")
         if not power_state:
             self._attr_available = False
@@ -73,4 +71,4 @@ class FrameoScreen(LightEntity):
                     self._attr_brightness = int(line.split("=")[1])
                     break
                 except (ValueError, IndexError):
-                    _LOGGER.warning("Could not parse brightness from line: %s", line)
+                    LOGGER.warning("Could not parse brightness from line: %s", line)

@@ -6,7 +6,7 @@ from adb_shell.exceptions import AdbConnectionError, AdbTimeoutError, UsbDeviceN
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_HOST, CONF_PORT
-from .const import DOMAIN, CONF_CONN_TYPE, CONN_TYPE_NETWORK, CONN_TYPE_USB, CONF_SERIAL
+from .const import DOMAIN, CONF_CONN_TYPE, CONN_TYPE_NETWORK, CONN_TYPE_USB, CONF_SERIAL, LOGGER
 
 async def _test_connection_usb(hass: HomeAssistant, serial: str | None) -> bool:
     """Test the USB ADB connection in an executor job."""
@@ -27,6 +27,10 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
         """Handle the initial step where the user chooses the connection type."""
+
+        # DEBUG
+        LOGGER.error("!!! FRAME CONTROL CONFIG FLOW HAS STARTED. CAN YOU SEE THIS? !!!")
+        
         return self.async_show_menu(
             step_id="user",
             menu_options=[CONN_TYPE_NETWORK, CONN_TYPE_USB],

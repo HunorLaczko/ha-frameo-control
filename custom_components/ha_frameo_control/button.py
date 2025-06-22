@@ -3,10 +3,8 @@ from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from .const import DOMAIN, CONF_CONN_TYPE, CONN_TYPE_USB
+from .const import DOMAIN, CONF_CONN_TYPE, CONN_TYPE_USB, LOGGER
 from . import FrameoConfigEntry
-
-_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up the Frameo button platform."""
@@ -38,7 +36,7 @@ class FrameoActionButton(ButtonEntity):
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
 
     async def async_press(self) -> None:
-        _LOGGER.info("Executing button '%s'", self.name)
+        LOGGER.info("Executing button '%s'", self.name)
         await self.client.async_shell(self._command)
 
 class FrameoStartWirelessAdbButton(ButtonEntity):
@@ -52,5 +50,5 @@ class FrameoStartWirelessAdbButton(ButtonEntity):
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
 
     async def async_press(self) -> None:
-        _LOGGER.info("Executing 'Start Wireless ADB' button.")
+        LOGGER.info("Executing 'Start Wireless ADB' button.")
         await self.client.async_tcpip(5555)
