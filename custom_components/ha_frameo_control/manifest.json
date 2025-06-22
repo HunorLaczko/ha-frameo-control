@@ -1,0 +1,13 @@
+{
+  "domain": "ha_frameo_control",
+  "name": "Frameo Control",
+  "config_flow": true,
+  "documentation": "https://gitea.lnrweb.com/luni/ha-frameo-control",
+  "issue_tracker": "https://gitea.lnrweb.com/luni/ha-frameo-control/issues",
+  "codeowners": ["@luni"],
+  "requirements": [
+    "adb-shell[usb,tcp]>=0.4.0"
+  ],
+  "version": "0.1",
+  "iot_class": "local_polling"
+}
