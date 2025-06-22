@@ -36,7 +36,7 @@ class FrameoActionButton(ButtonEntity):
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
 
     async def async_press(self) -> None:
-        LOGGER.info("Executing button '%s'", self.name)
+        LOGGER.error("Executing button '%s'", self.name)
         await self.client.async_shell(self._command)
 
 class FrameoStartWirelessAdbButton(ButtonEntity):
@@ -50,5 +50,5 @@ class FrameoStartWirelessAdbButton(ButtonEntity):
         self._attr_device_info = {"identifiers": {(DOMAIN, entry.entry_id)}}
 
     async def async_press(self) -> None:
-        LOGGER.info("Executing 'Start Wireless ADB' button.")
+        LOGGER.error("Executing 'Start Wireless ADB' button.")
         await self.client.async_tcpip(5555)

@@ -26,10 +26,10 @@ class FrameoScreen(LightEntity):
         self._attr_brightness = None
 
     async def async_turn_on(self, **kwargs) -> None:
-        LOGGER.info("Turning on Frameo screen")
+        LOGGER.error("Turning on Frameo screen")
         if ATTR_BRIGHTNESS in kwargs:
             new_brightness = kwargs[ATTR_BRIGHTNESS]
-            LOGGER.info("Setting Frameo brightness to %s", new_brightness)
+            LOGGER.error("Setting Frameo brightness to %s", new_brightness)
             await self.client.async_shell(f"settings put system screen_brightness {new_brightness}")
             self._attr_brightness = new_brightness
         
@@ -44,7 +44,7 @@ class FrameoScreen(LightEntity):
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
-        LOGGER.info("Turning off Frameo screen")
+        LOGGER.error("Turning off Frameo screen")
         if self._attr_is_on is True:
             await self.client.async_shell("input keyevent 26")
         else:
