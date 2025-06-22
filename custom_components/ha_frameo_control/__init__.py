@@ -4,16 +4,16 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 
 from .const import DOMAIN, LOGGER
-from .api import AdbClient
+from .api import FrameoAddonApiClient
 
 PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON]
-type FrameoConfigEntry = ConfigEntry[AdbClient]
+type FrameoConfigEntry = ConfigEntry[FrameoAddonApiClient]
 
 async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry) -> bool:
     """Set up HA Frameo Control from a config entry."""
     LOGGER.error("Setting up Frameo integration for %s", entry.title)
     
-    client = AdbClient(hass, entry.data)
+    client = FrameoAddonApiClient(hass)
     entry.runtime_data = client
     
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
