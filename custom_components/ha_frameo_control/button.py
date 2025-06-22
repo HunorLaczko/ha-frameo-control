@@ -42,7 +42,7 @@ class FrameoActionButton(ButtonEntity):
 
     async def async_press(self) -> None:
         """Handle the button press by executing an ADB command."""
-        _LOGGER.debug("Executing button '%s' with command: %s", self.name, self._command)
+        _LOGGER.info("Executing button '%s' with command: %s", self.name, self._command)
         await self.client.async_shell(self._command)
 
 class FrameoStartWirelessAdbButton(ButtonEntity):

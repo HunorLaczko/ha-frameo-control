@@ -29,6 +29,10 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_menu(
             step_id="user",
             menu_options=[CONN_TYPE_NETWORK, CONN_TYPE_USB],
+            menu_options_descriptions={
+                CONN_TYPE_NETWORK: "Connect using the device's IP Address. Wireless ADB must be enabled first.",
+                CONN_TYPE_USB: "Connect directly via a USB cable. This is required for initial setup and to enable Wireless ADB."
+            }
         )
 
     async def async_step_Network(self, user_input=None):
