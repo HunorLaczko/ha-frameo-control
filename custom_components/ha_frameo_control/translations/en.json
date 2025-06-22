@@ -1,0 +1,37 @@
+{
+  "config": {
+    "title": "Frameo Control",
+    "step": {
+      "user": {
+        "title": "Select Connection Method",
+        "description": "Choose how you want to connect to your Frameo device.",
+        "menu_options": {
+          "Network": "Network (IP Address)",
+          "USB": "USB Cable"
+        }
+      },
+      "Network": {
+        "title": "Configure Network Connection",
+        "description": "Enter the IP Address of your Frameo. Wireless ADB must be enabled on the device first.",
+        "data": {
+          "host": "Host IP Address",
+          "port": "Port"
+        }
+      },
+      "USB": {
+        "title": "Configure USB Connection",
+        "description": "Connect your Frameo via USB. If you have multiple ADB devices connected, specify the serial number (optional).",
+        "data": {
+          "serial": "Device Serial Number (Optional)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the device. Please check your settings, ensure ADB is enabled, and that the device is accessible.",
+      "unknown": "An unknown error occurred. Check the Home Assistant logs for more details."
+    },
+    "abort": {
+      "already_configured": "This Frameo device is already configured."
+    }
+  }
+}

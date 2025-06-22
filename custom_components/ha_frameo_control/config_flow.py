@@ -13,6 +13,7 @@ async def _test_connection_usb(hass: HomeAssistant, serial: str | None) -> bool:
     def test_sync_usb():
         """Synchronous USB test."""
         device = AdbDeviceUsb(serial=serial)
+        # The connect call for the synchronous library is blocking.
         device.connect(timeout_s=5.0)
         device.close()
         return True
@@ -29,17 +30,18 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_menu(
             step_id="user",
             menu_options=[CONN_TYPE_NETWORK, CONN_TYPE_USB],
-            menu_options_descriptions={
-                CONN_TYPE_NETWORK: "Connect using the device's IP Address. Wireless ADB must be enabled first.",
-                CONN_TYPE_USB: "Connect directly via a USB cable. This is required for initial setup and to enable Wireless ADB."
-            }
         )
 
     async def async_step_Network(self, user_input=None):
         """Handle the network connection setup."""
         errors = {}
         if user_input is not None:
+            # Prevent duplicate entries for the same host
+            await self.async_set_unique_id(user_input[CONF_HOST])
+            self._abort_if_unique_id_configured()
+
             try:
+                # Test connection
                 device = AdbDeviceTcpAsync(host=user_input[CONF_HOST], port=user_input[CONF_PORT])
                 await device.connect(timeout_s=5.0)
                 await device.close()
@@ -66,6 +68,11 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the USB connection setup."""
         errors = {}
         if user_input is not None:
+            # Use the serial number as the unique ID for USB devices
+            unique_id = user_input.get(CONF_SERIAL) or "usb_default"
+            await self.async_set_unique_id(unique_id)
+            self._abort_if_unique_id_configured()
+
             try:
                 await _test_connection_usb(self.hass, user_input.get(CONF_SERIAL))
                 return self.async_create_entry(
@@ -82,6 +89,5 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema({
                 vol.Optional(CONF_SERIAL): str,
             }),
-            description_placeholders={"docs_url": "https://www.home-assistant.io/integrations/androidtv/#adb-troubleshooting"},
             errors=errors,
         )
