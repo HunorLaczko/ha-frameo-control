@@ -19,20 +19,15 @@
         }
       },
       "USB": {
-        "title": "Searching for USB Devices...",
-        "description": "Scanning for connected ADB devices. Please wait."
-      },
-      "usb_select": {
-        "title": "Select a USB Device",
-        "description": "Choose the Frameo device you want to add from the list of detected devices.",
+        "title": "Configure USB Connection",
+        "description": "Enter the serial number for your USB-connected Frameo device. See the integration documentation for help finding the serial number.",
         "data": {
-          "serial": "Device"
+          "serial": "Device Serial Number"
         }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect to the device. Please check your settings, ensure ADB is enabled, and that the device is accessible.",
-      "no_devices_found": "No ADB devices found connected via USB. Please ensure the device is plugged in and ADB is enabled in its settings.",
+      "cannot_connect": "Failed to connect to the device. Please check your settings, ensure ADB is enabled and the serial/host is correct.",
       "unknown": "An unknown error occurred. Check the Home Assistant logs for more details."
     },
     "abort": {
