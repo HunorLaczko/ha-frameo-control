@@ -4,6 +4,7 @@ from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.helpers.httpx_client import get_async_client
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
+from .api import FrameoAddonApiClient
 
 from .const import (
     CONF_CONN_TYPE,
@@ -54,20 +55,28 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_USB(self, user_input=None):
         """Scan for USB devices and then proceed to the selection step."""
-        LOGGER.info("Scanning for USB devices...")
-        client = get_async_client(self.hass, verify_ssl=False)
-        url = f"{ADDON_URL}/devices/usb"
+        LOGGER.error("Config flow: USB step - creating API client to scan for devices")
+        
+        # Use the same API client that the integration uses for consistency
+        api_client = FrameoAddonApiClient(self.hass)
+        
         try:
-            response = await client.get(url, timeout=15)
-            response.raise_for_status()
-            self.discovered_serials = await response.json()
+            self.discovered_serials = await api_client.async_get_usb_devices()
+
+            if self.discovered_serials is None:
+                # This means there was a connection error logged by the api_client
+                return self.async_abort(reason="addon_not_running")
+
+            if not self.discovered_serials:
+                # This means the connection worked but an empty list was returned
+                return self.async_abort(reason="no_devices_found")
+
         except Exception as e:
-            LOGGER.error("Could not fetch USB devices from add-on: %s", e)
-            return self.async_abort(reason="addon_not_running")
+            # Add more detailed logging with the full exception traceback
+            LOGGER.error("Unexpected error during USB scan: %s", e, exc_info=True)
+            return self.async_abort(reason="unknown")
 
-        if not self.discovered_serials:
-            return self.async_abort(reason="no_devices_found")
-
+        # If devices are found, move to the selection step
         return await self.async_step_usb_select()
 
     async def async_step_usb_select(self, user_input=None):
