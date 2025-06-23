@@ -4,7 +4,7 @@ from homeassistant.const import Platform
 
 LOGGER = logging.getLogger(__package__)
 DOMAIN = "ha_frameo_control"
-ADDON_URL = "http://addon_467cfd57_frameo_control:5000"
+ADDON_URL = "http://127.0.0.1:5000"
 
 # Define the platforms that this integration will create entities for
 PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON]
