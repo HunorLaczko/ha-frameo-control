@@ -17,12 +17,12 @@ class FrameoAddonApiClient:
         try:
             response = await self.client.post(url, json=payload, timeout=20)
             response.raise_for_status()
-            return await response.json()
+            return response.json()
         except httpx.RequestError as e:
             LOGGER.error("Error requesting '%s': %s", endpoint, e)
             return None
         except Exception as e:
-            LOGGER.error("An unexpected error occurred for '%s': %s", endpoint, e)
+            LOGGER.error("An unexpected error occurred for '%s': %s", endpoint, e, exc_info=True)
             return None
 
     async def async_get_usb_devices(self):
@@ -31,9 +31,12 @@ class FrameoAddonApiClient:
         try:
             response = await self.client.get(url, timeout=15)
             response.raise_for_status()
-            return await response.json()
+            return response.json()
         except httpx.RequestError as e:
             LOGGER.error("Error getting USB devices: %s", e)
+            return None
+        except Exception as e:
+            LOGGER.error("An unexpected error occurred while getting USB devices: %s", e, exc_info=True)
             return None
     
     async def async_post_shell(self, conn_details: dict, command: str):
