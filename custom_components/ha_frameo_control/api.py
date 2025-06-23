@@ -1,7 +1,7 @@
 """API client for the Frameo Control Backend Add-on."""
 import httpx
 from homeassistant.helpers.httpx_client import get_async_client
-from .const import LOGGER, ADDON_URL
+from .const import LOGGER
 
 class FrameoAddonApiClient:
     """API Client for the Frameo Add-on."""
@@ -9,13 +9,13 @@ class FrameoAddonApiClient:
     def __init__(self, hass):
         """Initialize the API client."""
         self.client = get_async_client(hass, verify_ssl=False)
-        self.base_url = ADDON_URL
+        self.base_url = "http://127.0.0.1:5000"
 
     async def _post(self, endpoint, payload=None):
         """Generic POST request helper."""
         url = f"{self.base_url}{endpoint}"
         try:
-            response = await self.client.post(url, json=payload, timeout=20)
+            response = await self.client.post(url, json=payload, timeout=70)
             response.raise_for_status()
             return response.json()
         except httpx.RequestError as e:
