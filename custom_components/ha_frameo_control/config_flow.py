@@ -14,6 +14,7 @@ from .const import (
     CONF_PORT,
     DOMAIN,
     LOGGER,
+    ADDON_URL,
 )
 
 
@@ -55,7 +56,7 @@ class HaFrameoControlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Scan for USB devices and then proceed to the selection step."""
         LOGGER.info("Scanning for USB devices...")
         client = get_async_client(self.hass, verify_ssl=False)
-        url = "http://addon_467cfd57_frameo_control_addon:5000/devices/usb"
+        url = f"{ADDON_URL}/devices/usb"
         try:
             response = await client.get(url, timeout=15)
             response.raise_for_status()
