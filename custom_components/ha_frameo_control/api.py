@@ -41,13 +41,15 @@ class FrameoAddonApiClient:
     
     async def async_post_shell(self, conn_details: dict, command: str):
         """Send a shell command to the add-on."""
-        payload = {**conn_details, "command": command}
+        payload = {**dict(conn_details), "command": command}
         return await self._post("/shell", payload)
 
     async def async_get_state(self, conn_details: dict):
         """Get the current state from the add-on."""
-        return await self._post("/state", conn_details)
+        payload = dict(conn_details)
+        return await self._post("/state", payload)
 
     async def async_post_tcpip(self, conn_details: dict):
         """Send a request to enable wireless adb."""
-        return await self._post("/tcpip", conn_details)
+        payload = dict(conn_details)
+        return await self._post("/tcpip", payload)
