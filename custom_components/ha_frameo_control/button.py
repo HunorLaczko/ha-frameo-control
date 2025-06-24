@@ -9,44 +9,60 @@ from .const import DOMAIN, LOGGER
 from .coordinator import FrameoDataUpdateCoordinator
 from . import FrameoConfigEntry
 
-# These coordinates are optimized for a PORTRAIT screen (e.g., 800x1280).
-# By tapping the sides instead of the top/bottom, they have a better chance
-# of also working in landscape mode.
-PORTRAIT_WIDTH = 800
-PORTRAIT_HEIGHT = 1280
+# --- Hardcoded coordinates for a typical 1280x800 landscape screen ---
 
-# Tap the screen's sides, at the vertical midpoint.
-TAP_Y_COORD = int(PORTRAIT_HEIGHT / 2)  # -> 640
-PREVIOUS_X_COORD = int(PORTRAIT_WIDTH * 0.15) # -> 120 (Left side)
-NEXT_X_COORD = int(PORTRAIT_WIDTH * 0.85)     # -> 680 (Right side)
-CENTER_X_COORD = int(PORTRAIT_WIDTH / 2)       # -> 400 (Center)
+# For Frameo swipes
+SWIPE_Y = 500
+SWIPE_START_X = 800
+SWIPE_END_X = 100
+
+# For Immich taps (dividing the screen into thirds)
+TAP_Y = 400 # Vertical center of an 800px high screen
+LEFT_THIRD_TAP_X = 213   # Middle of the left third (0-426)
+CENTER_THIRD_TAP_X = 640 # Middle of the center third (427-853)
+RIGHT_THIRD_TAP_X = 1067 # Middle of the right third (854-1280)
 
 
 BUTTON_TYPES = {
-    "next_photo": {
-        "name": "Next Photo",
-        "command": f"input tap {NEXT_X_COORD} {TAP_Y_COORD}",
+    # --- Frameo App Controls (using swipes) ---
+    "frameo_next": {
+        "name": "Frameo Next Photo",
+        "command": f"input swipe {SWIPE_START_X} {SWIPE_Y} {SWIPE_END_X} {SWIPE_Y}",
+        "icon": "mdi:skip-next-circle-outline"
+    },
+    "frameo_prev": {
+        "name": "Frameo Previous Photo",
+        "command": f"input swipe {SWIPE_END_X} {SWIPE_Y} {SWIPE_START_X} {SWIPE_Y}",
+        "icon": "mdi:skip-previous-circle-outline"
+    },
+
+    # --- Immich App Controls (using taps/clicks) ---
+    "immich_next": {
+        "name": "Immich Next Photo",
+        "command": f"input tap {RIGHT_THIRD_TAP_X} {TAP_Y}",
         "icon": "mdi:arrow-right-drop-circle-outline"
     },
-    "prev_photo": {
-        "name": "Previous Photo",
-        "command": f"input tap {PREVIOUS_X_COORD} {TAP_Y_COORD}",
+    "immich_prev": {
+        "name": "Immich Previous Photo",
+        "command": f"input tap {LEFT_THIRD_TAP_X} {TAP_Y}",
         "icon": "mdi:arrow-left-drop-circle-outline"
     },
-    "pause_photo": {
-        "name": "Pause Photo",
-        "command": f"input tap {CENTER_X_COORD} {TAP_Y_COORD}",
+    "immich_pause": {
+        "name": "Immich Pause Photo",
+        "command": f"input tap {CENTER_THIRD_TAP_X} {TAP_Y}",
         "icon": "mdi:pause-circle-outline"
+    },
+
+    # --- General Utility Buttons ---
+    "start_frameo": {
+        "name": "Start Frameo App",
+        "command": "am start net.frameo.frame/.MainActivity",
+        "icon": "mdi:image-multiple"
     },
     "start_immich": {
         "name": "Start ImmichFrame",
         "command": "am start com.immichframe.immichframe/.MainActivity",
         "icon": "mdi:image-album"
-    },
-    "start_frameo": {
-        "name": "Start Frameo App",
-        "command": "am start net.frameo.frame",
-        "icon": "mdi:image-multiple"
     },
     "open_settings": {
         "name": "Open Settings",
