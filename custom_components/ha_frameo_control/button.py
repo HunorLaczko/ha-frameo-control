@@ -3,9 +3,10 @@ from homeassistant.components.button import ButtonEntity, ButtonDeviceClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN, LOGGER
-from .api import FrameoAddonApiClient
+from .coordinator import FrameoDataUpdateCoordinator
 from . import FrameoConfigEntry
 
 BUTTON_TYPES = {
@@ -22,17 +23,18 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: FrameoConfigEntry, async_add_entities: AddEntitiesCallback
 ):
     """Set up the Frameo button platform."""
-    client = entry.runtime_data
+    coordinator: FrameoDataUpdateCoordinator = entry.runtime_data
     entities = [
-        FrameoButton(client, entry, key, props) for key, props in BUTTON_TYPES.items()
+        FrameoButton(coordinator, entry, key, props) for key, props in BUTTON_TYPES.items()
     ]
     async_add_entities(entities)
 
-class FrameoButton(ButtonEntity):
+class FrameoButton(CoordinatorEntity[FrameoDataUpdateCoordinator], ButtonEntity):
     _attr_has_entity_name = True
 
-    def __init__(self, client: FrameoAddonApiClient, entry: FrameoConfigEntry, key: str, props: dict):
-        self.client = client
+    def __init__(self, coordinator: FrameoDataUpdateCoordinator, entry: FrameoConfigEntry, key: str, props: dict):
+        super().__init__(coordinator)
+        self.client = coordinator.client
         self.config_data = entry.data
         self.key = key
         self.props = props

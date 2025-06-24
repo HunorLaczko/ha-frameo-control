@@ -7,7 +7,7 @@ DOMAIN = "ha_frameo_control"
 ADDON_URL = "http://127.0.0.1:5000"
 
 # Define the platforms that this integration will create entities for
-PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON]
+PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.BUTTON, Platform.SENSOR]
 
 # Configuration Keys
 CONF_CONN_TYPE = "connection_type"

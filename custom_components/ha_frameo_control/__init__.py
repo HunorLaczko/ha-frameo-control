@@ -4,16 +4,22 @@ from homeassistant.core import HomeAssistant
 
 from .api import FrameoAddonApiClient
 from .const import LOGGER, PLATFORMS
+from .coordinator import FrameoDataUpdateCoordinator
 
-type FrameoConfigEntry = ConfigEntry[FrameoAddonApiClient]
+type FrameoConfigEntry = ConfigEntry[FrameoDataUpdateCoordinator]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry) -> bool:
     """Set up HA Frameo Control from a config entry."""
     LOGGER.error("Setting up Frameo integration for %s", entry.title)
 
-    client = FrameoAddonApiClient(hass)
-    entry.runtime_data = client
+    api_client = FrameoAddonApiClient(hass)
+    coordinator = FrameoDataUpdateCoordinator(hass, api_client, entry.data)
+    
+    # Fetch initial data so we have it before entities are set up
+    await coordinator.async_config_entry_first_refresh()
+
+    entry.runtime_data = coordinator
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
