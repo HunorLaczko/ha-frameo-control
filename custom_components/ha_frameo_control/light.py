@@ -26,7 +26,6 @@ class FrameoScreen(CoordinatorEntity[FrameoDataUpdateCoordinator], LightEntity):
         """Initialize the light."""
         super().__init__(coordinator)
         self.client = coordinator.client
-        self.config_data = entry.data
         self._attr_unique_id = f"{entry.entry_id}_screen"
         self._attr_device_info = {
             "identifiers": {(DOMAIN, entry.entry_id)},
@@ -47,19 +46,19 @@ class FrameoScreen(CoordinatorEntity[FrameoDataUpdateCoordinator], LightEntity):
         """Turn the screen on."""
         if ATTR_BRIGHTNESS in kwargs:
             new_brightness = kwargs[ATTR_BRIGHTNESS]
-            LOGGER.error("Setting Frameo brightness to %s", new_brightness)
-            await self.client.async_post_shell(self.config_data, f"settings put system screen_brightness {new_brightness}")
+            LOGGER.info("Setting Frameo brightness to %s", new_brightness)
+            await self.client.async_post_shell(f"settings put system screen_brightness {new_brightness}")
         
         if not self.is_on:
-            LOGGER.error("Turning on Frameo screen")
-            await self.client.async_post_shell(self.config_data, "input keyevent 26")
+            LOGGER.info("Turning on Frameo screen")
+            await self.client.async_post_shell("input keyevent 26")
         
         await self.coordinator.async_request_refresh()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the screen off."""
         if self.is_on:
-            LOGGER.error("Turning off Frameo screen")
-            await self.client.async_post_shell(self.config_data, "input keyevent 26")
+            LOGGER.info("Turning off Frameo screen")
+            await self.client.async_post_shell("input keyevent 26")
         
         await self.coordinator.async_request_refresh()

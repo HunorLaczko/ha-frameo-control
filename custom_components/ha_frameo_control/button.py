@@ -35,7 +35,6 @@ class FrameoButton(CoordinatorEntity[FrameoDataUpdateCoordinator], ButtonEntity)
     def __init__(self, coordinator: FrameoDataUpdateCoordinator, entry: FrameoConfigEntry, key: str, props: dict):
         super().__init__(coordinator)
         self.client = coordinator.client
-        self.config_data = entry.data
         self.key = key
         self.props = props
         self._attr_name = props["name"]
@@ -48,8 +47,9 @@ class FrameoButton(CoordinatorEntity[FrameoDataUpdateCoordinator], ButtonEntity)
         }
 
     async def async_press(self):
-        LOGGER.error("Executing button '%s'", self.name)
+        """Handle the button press."""
+        LOGGER.info("Executing button '%s'", self.name)
         if self.key == "start_wireless":
-            await self.client.async_post_tcpip(self.config_data)
+            await self.client.async_post_tcpip()
         else:
-            await self.client.async_post_shell(self.config_data, self.props["command"])
+            await self.client.async_post_shell(self.props["command"])

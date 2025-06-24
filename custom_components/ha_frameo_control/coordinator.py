@@ -26,9 +26,8 @@ class FrameoDataUpdateCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         """Fetch data from the add-on."""
         try:
-            # Fetch the two key pieces of information in parallel
-            state_task = self.client.async_get_state(self.config_data)
-            ip_task = self.client.async_get_ip_address(self.config_data)
+            state_task = self.client.async_get_state()
+            ip_task = self.client.async_get_ip_address()
 
             state, ip_info = await gather(state_task, ip_task)
 
