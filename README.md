@@ -38,7 +38,7 @@ With the Backend Add-on running, you can now add the integration.
 
 1.  Navigate to **Settings > Devices & Services**.
 2.  Click **Add Integration** and search for **"Frameo Control"**.
-3.  Choose your connection method. **USB is mandatory for the initial setup.**
+3.  Choose your connection method. **USB is mandatory for the initial setup.** (At least for Frameo running Android 6.0. Above Android 10, you might be able to connect with the network method directly.)
 4.  Select your device from the discovered list.
 5.  Click **Submit**.
 6.  **IMMEDIATELY CHECK THE FRAMEO DEVICE'S SCREEN.** You must accept the **"Allow USB Debugging"** prompt that appears on the device. You have about two minutes to approve it.
