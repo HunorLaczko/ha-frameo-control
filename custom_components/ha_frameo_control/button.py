@@ -14,7 +14,7 @@ BUTTON_TYPES = {
     "prev_photo": {"name": "Previous Photo", "command": "input swipe 100 500 800 500", "icon": "mdi:skip-previous"},
     "pause_photo": {"name": "Pause Photo", "command": "input keyevent 85", "icon": "mdi:pause"},
     "start_immich": {"name": "Start ImmichFrame", "command": "am start com.immichframe.immichframe/.MainActivity", "icon": "mdi:image-album"},
-    "start_frameo": {"name": "Start Frameo App", "command": "am start net.frameo.frame/.MainActivity", "icon": "mdi:image-multiple"},
+    "start_frameo": {"name": "Start Frameo App", "command": "am start net.frameo.frame", "icon": "mdi:image-multiple"},
     "open_settings": {"name": "Open Settings", "command": "am start -a android.settings.SETTINGS", "icon": "mdi:cog"},
     "start_wireless": {"name": "Start Wireless ADB", "command": "tcpip", "icon": "mdi:wifi-arrow-up-down", "device_class": ButtonDeviceClass.RESTART},
 }
