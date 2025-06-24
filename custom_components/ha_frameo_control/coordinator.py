@@ -12,10 +12,9 @@ from .const import DOMAIN, LOGGER
 class FrameoDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching data from the Frameo add-on."""
 
-    def __init__(self, hass: HomeAssistant, client: FrameoAddonApiClient, config_data: dict):
+    def __init__(self, hass: HomeAssistant, client: FrameoAddonApiClient):
         """Initialize the data update coordinator."""
         self.client = client
-        self.config_data = config_data
         super().__init__(
             hass,
             LOGGER,
@@ -34,7 +33,6 @@ class FrameoDataUpdateCoordinator(DataUpdateCoordinator):
             if not state or "is_on" not in state:
                 raise UpdateFailed("Failed to get device state from add-on")
             
-            # Combine the results into a single data object
             data = {
                 "is_on": state.get("is_on"),
                 "brightness": state.get("brightness"),
