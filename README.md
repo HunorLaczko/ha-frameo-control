@@ -51,6 +51,7 @@ The "Start Wireless ADB" button allows you to switch from a USB to a network con
 
 > [!NOTE]
 > Once you enable wireless ADB, the USB ADB interface on the device will stop working until the device is rebooted. You will need to re-configure the integration.
+> Consequently, if you reboot the device you have to enable wireless mode again. But this time it should remember HA's key and not ask for confirmation, so you should be able to connect. Enabling the wireless mode can be done in theory by a third device as well once the initial USBV setup is done and you have ticked the always allow option in the ADB popup. 
 
 1.  Ensure your integration is set up and working via **USB**.
 2.  Press the **Start Wireless ADB** button in Home Assistant.
