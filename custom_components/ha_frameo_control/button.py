@@ -9,14 +9,55 @@ from .const import DOMAIN, LOGGER
 from .coordinator import FrameoDataUpdateCoordinator
 from . import FrameoConfigEntry
 
+# These coordinates are optimized for a PORTRAIT screen (e.g., 800x1280).
+# By tapping the sides instead of the top/bottom, they have a better chance
+# of also working in landscape mode.
+PORTRAIT_WIDTH = 800
+PORTRAIT_HEIGHT = 1280
+
+# Tap the screen's sides, at the vertical midpoint.
+TAP_Y_COORD = int(PORTRAIT_HEIGHT / 2)  # -> 640
+PREVIOUS_X_COORD = int(PORTRAIT_WIDTH * 0.15) # -> 120 (Left side)
+NEXT_X_COORD = int(PORTRAIT_WIDTH * 0.85)     # -> 680 (Right side)
+CENTER_X_COORD = int(PORTRAIT_WIDTH / 2)       # -> 400 (Center)
+
+
 BUTTON_TYPES = {
-    "next_photo": {"name": "Next Photo", "command": "input swipe 800 500 100 500", "icon": "mdi:skip-next"},
-    "prev_photo": {"name": "Previous Photo", "command": "input swipe 100 500 800 500", "icon": "mdi:skip-previous"},
-    "pause_photo": {"name": "Pause Photo", "command": "input keyevent 85", "icon": "mdi:pause"},
-    "start_immich": {"name": "Start ImmichFrame", "command": "am start com.immichframe.immichframe/.MainActivity", "icon": "mdi:image-album"},
-    "start_frameo": {"name": "Start Frameo App", "command": "am start net.frameo.frame", "icon": "mdi:image-multiple"},
-    "open_settings": {"name": "Open Settings", "command": "am start -a android.settings.SETTINGS", "icon": "mdi:cog"},
-    "start_wireless": {"name": "Start Wireless ADB", "command": "tcpip", "icon": "mdi:wifi-arrow-up-down", "device_class": ButtonDeviceClass.RESTART},
+    "next_photo": {
+        "name": "Next Photo",
+        "command": f"input tap {NEXT_X_COORD} {TAP_Y_COORD}",
+        "icon": "mdi:arrow-right-drop-circle-outline"
+    },
+    "prev_photo": {
+        "name": "Previous Photo",
+        "command": f"input tap {PREVIOUS_X_COORD} {TAP_Y_COORD}",
+        "icon": "mdi:arrow-left-drop-circle-outline"
+    },
+    "pause_photo": {
+        "name": "Pause Photo",
+        "command": f"input tap {CENTER_X_COORD} {TAP_Y_COORD}",
+        "icon": "mdi:pause-circle-outline"
+    },
+    "start_immich": {
+        "name": "Start ImmichFrame",
+        "command": "am start com.immichframe.immichframe/.MainActivity",
+        "icon": "mdi:image-album"
+    },
+    "start_frameo": {
+        "name": "Start Frameo App",
+        "command": "am start net.frameo.frame",
+        "icon": "mdi:image-multiple"
+    },
+    "open_settings": {
+        "name": "Open Settings",
+        "command": "am start -a android.settings.SETTINGS",
+        "icon": "mdi:cog"
+    },
+    "start_wireless": {
+        "name": "Start Wireless ADB",
+        "icon": "mdi:wifi-arrow-up-down",
+        "device_class": ButtonDeviceClass.RESTART
+    },
 }
 
 async def async_setup_entry(
