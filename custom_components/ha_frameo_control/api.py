@@ -53,7 +53,3 @@ class FrameoAddonApiClient:
     async def async_post_tcpip(self):
         """Send a request to enable wireless adb."""
         return await self._post("/tcpip")
-    
-    async def async_get_ip_address(self):
-        """Get the device's IP address from the add-on."""
-        return await self._post("/ip")
