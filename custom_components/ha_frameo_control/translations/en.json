@@ -23,12 +23,13 @@
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect. Please check settings and ensure the device is accessible."
+      "cannot_connect": "Failed to connect to the device at the specified network address.",
+      "cannot_connect_usb": "Connection failed. This may be because the 'Allow USB Debugging' prompt on the device was not approved in time. Please try again."
     },
     "abort": {
       "single_instance_allowed": "Only a single configuration of the Frameo control integration is allowed.",
       "addon_not_running": "Could not connect to the Frameo Control Backend add-on. Please ensure it is installed, running, and has started successfully.",
-      "no_devices_found": "No ADB devices found connected via USB. Ensure the device is plugged in and ADB is enabled in its settings."
+      "no_devices_found": "No ADB devices found connected via USB. Ensure the device is plugged in, Developer Options are enabled, and USB Debugging is turned on in its settings."
     }
   }
 }

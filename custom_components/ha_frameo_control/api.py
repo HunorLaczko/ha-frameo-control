@@ -11,11 +11,12 @@ class FrameoAddonApiClient:
         self.client = get_async_client(hass, verify_ssl=False)
         self.base_url = ADDON_URL
 
-    async def _post(self, endpoint, payload=None):
+    async def _post(self, endpoint, payload=None, timeout=20):
         """Generic POST request helper."""
         url = f"{self.base_url}{endpoint}"
         try:
-            response = await self.client.post(url, json=payload, timeout=70)
+            json_payload = payload if payload is not None else {}
+            response = await self.client.post(url, json=json_payload, timeout=timeout)
             response.raise_for_status()
             return response.json()
         except httpx.RequestError as e:
@@ -32,29 +33,27 @@ class FrameoAddonApiClient:
             response = await self.client.get(url, timeout=15)
             response.raise_for_status()
             return response.json()
-        except httpx.RequestError as e:
+        except Exception as e:
             LOGGER.error("Error getting USB devices: %s", e)
             return None
-        except Exception as e:
-            LOGGER.error("An unexpected error occurred while getting USB devices: %s", e, exc_info=True)
-            return None
     
-    async def async_post_shell(self, conn_details: dict, command: str):
+    async def async_connect(self, conn_details: dict):
+        """Explicitly tell the addon to connect to a device."""
+        # Use a long timeout to allow for user interaction on the device screen
+        return await self._post("/connect", payload=conn_details, timeout=130)
+
+    async def async_post_shell(self, command: str):
         """Send a shell command to the add-on."""
-        payload = {**dict(conn_details), "command": command}
-        return await self._post("/shell", payload)
+        return await self._post("/shell", {"command": command})
 
-    async def async_get_state(self, conn_details: dict):
+    async def async_get_state(self):
         """Get the current state from the add-on."""
-        payload = dict(conn_details)
-        return await self._post("/state", payload)
+        return await self._post("/state")
 
-    async def async_post_tcpip(self, conn_details: dict):
+    async def async_post_tcpip(self):
         """Send a request to enable wireless adb."""
-        payload = dict(conn_details)
-        return await self._post("/tcpip", payload)
+        return await self._post("/tcpip")
     
-    async def async_get_ip_address(self, conn_details: dict):
+    async def async_get_ip_address(self):
         """Get the device's IP address from the add-on."""
-        payload = dict(conn_details)
-        return await self._post("/ip", payload)
+        return await self._post("/ip")
