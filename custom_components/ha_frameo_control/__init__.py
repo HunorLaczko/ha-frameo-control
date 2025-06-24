@@ -18,7 +18,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: FrameoConfigEntry) -> bo
 
     # On every startup, explicitly tell the addon to connect using the stored config data.
     LOGGER.info("Attempting to establish connection with the Frameo addon...")
-    connect_result = await api_client.async_connect(entry.data)
+    connect_result = await api_client.async_connect(dict(entry.data))
 
     # Check if the initial connection was successful.
     if not connect_result or connect_result.get("status") not in ["connected", "already_connected"]:
