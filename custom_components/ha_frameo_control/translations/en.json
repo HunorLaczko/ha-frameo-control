@@ -2,14 +2,28 @@
   "config": {
     "step": {
       "user": {
+        "title": "Configure Add-on Connection",
+        "description": "You only need to change these settings if you modified the default configuration of the Frameo Control Backend add-on. Otherwise, just click **Submit** to continue.",
+        "data": {
+          "addon_host": "Add-on Host",
+          "addon_port": "Add-on Port"
+        },
+        "data_description": {
+          "addon_host": "IP address of the Frameo Control Backend add-on",
+          "addon_port": "Port of the Frameo Control Backend add-on"
+        }
+      },
+      "connection_type": {
         "title": "Select Connection Method",
+        "description": "Choose how you want to connect to your Frameo device.",
         "menu_options": {
-          "Network": "Network (IP Address)",
-          "USB": "USB Cable (Recommended for setup)"
+          "Network": "Network (IP Address) - Connect over your local network using wireless ADB",
+          "USB": "USB Cable (Recommended for setup) - Connect directly via USB cable"
         }
       },
       "Network": {
         "title": "Configure Network Connection",
+        "description": "Enter the IP address of your Frameo device. Make sure Wireless ADB is enabled in the device's Developer Options.",
         "data": {
           "host": "Host IP Address",
           "port": "Port"
@@ -17,6 +31,7 @@
       },
       "usb_select": {
         "title": "Select USB Device",
+        "description": "Select your Frameo device from the list below. After clicking Submit, an **'Allow USB Debugging'** prompt will appear on the device screen. Tap **Allow** and make sure to check the **'Always allow from this computer'** checkbox to remember this connection.",
         "data": {
           "serial": "Detected Device"
         }
@@ -24,12 +39,45 @@
     },
     "error": {
       "cannot_connect": "Failed to connect to the device at the specified network address.",
-      "cannot_connect_usb": "Connection failed. This may be because the 'Allow USB Debugging' prompt on the device was not approved in time. Please try again."
+      "cannot_connect_usb": "Connection failed. This may be because the 'Allow USB Debugging' prompt on the device was not approved in time. Please try again.",
+      "addon_connection_failed": "Could not connect to the Frameo Control Backend add-on at the specified address. Please check the host and port."
     },
     "abort": {
       "single_instance_allowed": "Only a single configuration of the Frameo control integration is allowed.",
       "addon_not_running": "Could not connect to the Frameo Control Backend add-on. Please ensure it is installed, running, and has started successfully.",
       "no_devices_found": "No ADB devices found connected via USB. Ensure the device is plugged in, Developer Options are enabled, and USB Debugging is turned on in its settings."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Frameo Control Options",
+        "description": "Configure the Frameo Control integration settings. Screen resolution is auto-detected, but you can override it here if needed.",
+        "data": {
+          "addon_host": "Add-on Host",
+          "addon_port": "Add-on Port",
+          "screen_width": "Screen Width (pixels)",
+          "screen_height": "Screen Height (pixels)"
+        },
+        "data_description": {
+          "addon_host": "IP address of the Frameo Control Backend add-on (usually 127.0.0.1)",
+          "addon_port": "Port of the Frameo Control Backend add-on (usually 5000)",
+          "screen_width": "Fallback screen width if auto-detection fails",
+          "screen_height": "Fallback screen height if auto-detection fails"
+        }
+      }
+    }
+  },
+  "services": {
+    "run_adb_command": {
+      "name": "Run ADB Command",
+      "description": "Execute a custom ADB shell command on the Frameo device. The result will be returned and also fired as an event.",
+      "fields": {
+        "command": {
+          "name": "Command",
+          "description": "The ADB shell command to execute (e.g., 'input keyevent 26' to toggle power)."
+        }
+      }
     }
   }
 }

@@ -1,0 +1,11 @@
+run_adb_command:
+  name: Run ADB Command
+  description: Execute a custom ADB shell command on the Frameo device.
+  fields:
+    command:
+      name: Command
+      description: The ADB shell command to execute.
+      required: true
+      example: "input keyevent 26"
+      selector:
+        text:

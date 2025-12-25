@@ -38,12 +38,21 @@ With the Backend Add-on running, you can now add the integration.
 
 1.  Navigate to **Settings > Devices & Services**.
 2.  Click **Add Integration** and search for **"Frameo Control"**.
-3.  Choose your connection method. **USB is mandatory for the initial setup.** (At least for Frameo running Android 6.0. Above Android 10, you might be able to connect with the network method directly.)
-4.  Select your device from the discovered list.
-5.  Click **Submit**.
-6.  **IMMEDIATELY CHECK THE FRAMEO DEVICE'S SCREEN.** You must accept the **"Allow USB Debugging"** prompt that appears on the device. You have about two minutes to approve it.
+3.  **Configure Add-on Connection**: The first step shows the add-on host and port settings. If you're using default settings, just click **Submit**. Only change these if you modified the add-on configuration.
+4.  **Select Connection Method**: Choose how to connect to your device.
+    - **USB Cable (Recommended for setup)** - Use this for initial setup. Direct and reliable.
+    - **Network (IP Address)** - Use this after enabling Wireless ADB (see below).
+5.  **For USB connections**: Select your device from the discovered list and click **Submit**.
+6.  **IMPORTANT: Check your device screen!** An **"Allow USB Debugging"** prompt will appear on the Frameo device. Tap **Allow** and make sure to check the **"Always allow from this computer"** checkbox. You have about two minutes to approve it.
 
 The integration should now be set up and your entities will be created.
+
+### ⚙️ Integration Options
+
+After setup, you can configure additional options by clicking **Configure** on the integration:
+
+- **Add-on Host/Port**: Change if you've reconfigured the backend add-on.
+- **Screen Width/Height**: Override the auto-detected screen resolution. Useful if auto-detection fails.
 
 ## ✨ Switching to a Network Connection
 
@@ -51,14 +60,68 @@ The "Start Wireless ADB" button allows you to switch from a USB to a network con
 
 > [!NOTE]
 > Once you enable wireless ADB, the USB ADB interface on the device will stop working until the device is rebooted. You will need to re-configure the integration.
-> Consequently, if you reboot the device you have to enable wireless mode again. But this time it should remember HA's key and not ask for confirmation, so you should be able to connect. Enabling the wireless mode can be done in theory by a third device as well once the initial USBV setup is done and you have ticked the always allow option in the ADB popup. 
+> Consequently, if you reboot the device you have to enable wireless mode again. But this time it should remember HA's key and not ask for confirmation, so you should be able to connect. Enabling the wireless mode can be done in theory by a third device as well once the initial USB setup is done and you have ticked the always allow option in the ADB popup. 
 
 1.  Ensure your integration is set up and working via **USB**.
 2.  Press the **Start Wireless ADB** button in Home Assistant.
 3.  On your Frameo device, go to its settings to find its IP Address. Or check your router.
 4.  In Home Assistant, go to **Settings > Devices & Services**, find your Frameo Control integration, and **DELETE** it.
 5.  Click **Add Integration** again and add **"Frameo Control"**.
-6.  This time, choose the **Network** connection method and enter the IP address of your device.
+6.  Click **Submit** on the add-on connection step (or configure if needed).
+7.  This time, choose the **Network** connection method and enter the IP address of your device.
+
+## 🔧 Services
+
+The integration provides a custom service for advanced users.
+
+### `ha_frameo_control.run_adb_command`
+
+Execute a custom ADB shell command on the Frameo device. This is useful for advanced automation or debugging.
+
+**Service Data:**
+
+| Field     | Type   | Required | Description                                      |
+| :-------- | :----- | :------- | :----------------------------------------------- |
+| `command` | string | Yes      | The ADB shell command to execute on the device.  |
+
+**Example:**
+
+```yaml
+service: ha_frameo_control.run_adb_command
+data:
+  command: "input keyevent 26"  # Toggle power/screen
+```
+
+**Output:**
+
+The service returns the command output and also fires an event `ha_frameo_control_adb_response` with the result, which you can use in automations.
+
+```yaml
+# Example automation listening for ADB response
+automation:
+  - alias: "Log ADB Command Result"
+    trigger:
+      - platform: event
+        event_type: ha_frameo_control_adb_response
+    action:
+      - service: notify.persistent_notification
+        data:
+          title: "ADB Command Result"
+          message: "{{ trigger.event.data.result }}"
+```
+
+**Common ADB Commands:**
+
+| Command                                    | Description                          |
+| :----------------------------------------- | :----------------------------------- |
+| `input keyevent 26`                        | Toggle screen on/off                 |
+| `input keyevent 3`                         | Home button                          |
+| `input keyevent 4`                         | Back button                          |
+| `input tap X Y`                            | Tap at coordinates                   |
+| `input swipe X1 Y1 X2 Y2`                  | Swipe gesture                        |
+| `am start -n com.package/.Activity`        | Launch an app                        |
+| `dumpsys window displays \| grep -E 'cur='` | Get screen resolution                |
+| `wm size`                                  | Get window manager size              |
 
 ## 🖼️ Entities
 
@@ -77,16 +140,28 @@ This integration creates a device with several entities to control your frame.
 | `button`    | Open Settings           | Opens the main Android Settings page on the device.                          |
 | `button`    | Start Wireless ADB      | Enables Wireless ADB mode (see workflow above).                              |
 
+## ⚡ On-Demand State Updates (No Polling)
 
-## Known Issues
+This integration does **not** automatically poll the device. State is only fetched when you interact with it (buttons, light control, etc.).
 
-* **Brightness control does not work.** While the `light` entity is present, attempting to change the brightness will have no effect.
-* The connection to the device can sometimes be lost if the addon or Home Assistant restarts. If entities become `Unavailable`, reloading the integration from the Devices & Services page will usually fix it.
+**Why?** Frequent ADB commands over USB can destabilize the connection and cause `LIBUSB_ERROR_NO_DEVICE` errors. This approach also conserves resources and enables automatic reconnection on demand.
+
+**Trade-offs:**
+- State displayed in Home Assistant may become stale if the device is controlled manually or its screen times out.
+- Screen resolution is automatically refreshed before gesture commands to handle orientation changes.
+
+**Forcing a refresh:** Toggle the screen entity or press any button. To sync state in automation without affecting the device, call the `run_adb_command` service with `echo ok`.
 
 ## 🚧 Future Development (TODO)
 
 This integration is still under development. Contributions and ideas are welcome!
 * **Dynamic Controls:** Intelligently detect the currently open app (Frameo vs. Immich) to dynamically show only the relevant buttons.
-* **Dynamic Orientation:** Detect screen orientation to provide perfectly placed taps, rather than relying on hardcoded coordinates.
 * **Backend Improvements:** Investigate removing the need for `host_network: true` in the backend addon for improved network security.
 * **Control Multiple Devices:** Allow a single Home Assistant instance to control more than one Frameo frame.
+
+## Known Issues
+
+* **Brightness control does not work.** While the `light` entity is present, attempting to change the brightness will have no effect.
+* The connection to the device can sometimes be lost if the addon or Home Assistant restarts. If entities become `Unavailable`, reloading the integration from the Devices & Services page will usually fix it.
+* The wireless ADB settings resets after reboot on old Androids. I have not found a workaround for this.
+* There is a significant delay (few seconds even) when interacting from HA (next image, pause, screen, etc.). This was a compromise I had to make to have a reliable connection. 
