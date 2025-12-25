@@ -62,6 +62,13 @@ The "Start Wireless ADB" button allows you to switch from a USB to a network con
 > Once you enable wireless ADB, the USB ADB interface on the device will stop working until the device is rebooted. You will need to re-configure the integration.
 > Consequently, if you reboot the device you have to enable wireless mode again. But this time it should remember HA's key and not ask for confirmation, so you should be able to connect. Enabling the wireless mode can be done in theory by a third device as well once the initial USB setup is done and you have ticked the always allow option in the ADB popup. 
 
+> [!TIP]
+> **Persistent Wireless ADB Workaround**
+> 
+> If wireless ADB keeps resetting after reboots (common on older Android versions), there's a workaround available. See [this Home Assistant community post](https://community.home-assistant.io/t/frameo-photo-frame/614527/13?u=hunorlaczko) for details. You can use the HA service described below to run the command (without the adb shell part).
+> 
+> **Tip:** Set a static IP address from the device itself to make reconnection more reliable.
+
 1.  Ensure your integration is set up and working via **USB**.
 2.  Press the **Start Wireless ADB** button in Home Assistant.
 3.  On your Frameo device, go to its settings to find its IP Address. Or check your router.
@@ -163,5 +170,4 @@ This integration is still under development. Contributions and ideas are welcome
 
 * **Brightness control does not work.** While the `light` entity is present, attempting to change the brightness will have no effect.
 * The connection to the device can sometimes be lost if the addon or Home Assistant restarts. If entities become `Unavailable`, reloading the integration from the Devices & Services page will usually fix it.
-* The wireless ADB settings resets after reboot on old Androids. I have not found a workaround for this.
 * There is a significant delay (few seconds even) when interacting from HA (next image, pause, screen, etc.). This was a compromise I had to make to have a reliable connection. 
