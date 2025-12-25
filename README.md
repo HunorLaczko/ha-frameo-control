@@ -171,3 +171,4 @@ This integration is still under development. Contributions and ideas are welcome
 * **Brightness control does not work.** While the `light` entity is present, attempting to change the brightness will have no effect.
 * The connection to the device can sometimes be lost if the addon or Home Assistant restarts. If entities become `Unavailable`, reloading the integration from the Devices & Services page will usually fix it.
 * There is a significant delay (few seconds even) when interacting from HA (next image, pause, screen, etc.). This was a compromise I had to make to have a reliable connection. 
+* On some devices turning off the screen results in the device sleeping (presumably). This means that the entities become `Unavailable` right after turning off the screen. In this case you manually have to turn it back on and reload the integration. I don't have a workaround for this yet.
