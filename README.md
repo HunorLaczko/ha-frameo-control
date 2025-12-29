@@ -65,7 +65,7 @@ The "Start Wireless ADB" button allows you to switch from a USB to a network con
 > [!TIP]
 > **Persistent Wireless ADB Workaround**
 > 
-> If wireless ADB keeps resetting after reboots (common on older Android versions), there's a workaround available. See [this Home Assistant community post](https://community.home-assistant.io/t/frameo-photo-frame/614527/13?u=hunorlaczko) for details. You can use the HA service described below to run the command (without the adb shell part).
+> If wireless ADB keeps resetting after reboots (common on older Android versions), there's a workaround available. See [this Home Assistant community post](https://community.home-assistant.io/t/frameo-photo-frame/614527/13?u=hunorlaczko) or [this Github issue](https://github.com/HunorLaczko/ha-frameo-control/issues/3) for details. You can use the HA service described below to run the command (without the adb shell part).
 > 
 > **Tip:** Set a static IP address from the device itself to make reconnection more reliable.
 
